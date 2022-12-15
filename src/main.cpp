@@ -29,8 +29,10 @@ void test_files()
 		"lena.pgm",	"mandril.pgm", "peppers.pgm"
 	};
 
-	std::cout << "Images" << std::endl;
-	for (int i = 0; i < images.size(); ++i)
+	std::cout << "Read images" << std::endl;
+	int list_image_size = (int)images.size();
+
+	for (int i = 0; i < list_image_size; ++i)
 	{
 		std::vector<unsigned char> bytes = read_bytes_from_file("data/images/" + images[i]);
 		std::cout << "File: " << images[i] << std::endl;
