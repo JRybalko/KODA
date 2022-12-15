@@ -31,7 +31,7 @@ void test_files()
 	std::cout << "Images" << std::endl;
 	for (int i = 0; i < images.size(); ++i)
 	{
-		std::vector<unsigned char> bytes = read_bytes_from_file("data/" + images[i]);
+		std::vector<unsigned char> bytes = read_bytes_from_file("data/images/" + images[i]);
 		std::cout << "File: " << images[i] << std::endl;
 		std::string file_path = "out/images/" + images[i];
 		test_file(bytes, file_path);
