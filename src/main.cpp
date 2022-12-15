@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Encoder.hpp"
 #include <fstream>
+#include <chrono>
 
 int main()
 {
