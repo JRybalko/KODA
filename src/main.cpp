@@ -3,11 +3,7 @@
 #include <fstream>
 #include <chrono>
 
-int main()
-{
-	test_files();
-	return 0;
-}
+
 
 std::pair<unsigned int, unsigned int> calculate_bits(std::vector<unsigned char> bytes)
 {
@@ -22,23 +18,16 @@ std::pair<unsigned int, unsigned int> calculate_bits(std::vector<unsigned char> 
 	return std::make_pair(c1, c2);
 }
 
-void test_files() 
+std::vector<unsigned char> read_bytes_from_file(std::string filename)
 {
-	std::vector<std::string> images = {
-		"barbara.pgm", "boat.pgm", "chronometer.pgm", 
-		"lena.pgm",	"mandril.pgm", "peppers.pgm"
-	};
+	std::ifstream input(filename, std::ios::binary);
 
-	std::cout << "Read images" << std::endl;
-	int list_image_size = (int)images.size();
+	std::vector<unsigned char> bytes(
+		(std::istreambuf_iterator<char>(input)),
+		(std::istreambuf_iterator<char>()));
 
-	for (int i = 0; i < list_image_size; ++i)
-	{
-		std::vector<unsigned char> bytes = read_bytes_from_file("data/images/" + images[i]);
-		std::cout << "File: " << images[i] << std::endl;
-		test_file(bytes);
-	}
-	std::cout << std::endl;
+	input.close();
+	return bytes;
 }
 
 void test_file(std::vector<unsigned char> bytes)
@@ -63,16 +52,23 @@ void test_file(std::vector<unsigned char> bytes)
 	std::cout << "Encode time: " << encode_time.count() << " ns" << std::endl;
 }
 
-std::vector<unsigned char> read_bytes_from_file(std::string filename)
+void test_files() 
 {
-	std::ifstream input(filename, std::ios::binary);
+	std::vector<std::string> images = {
+		"barbara.pgm", "boat.pgm", "chronometer.pgm", 
+		"lena.pgm",	"mandril.pgm", "peppers.pgm"
+	};
 
-	std::vector<unsigned char> bytes(
-		(std::istreambuf_iterator<char>(input)),
-		(std::istreambuf_iterator<char>()));
+	std::cout << "Read images" << std::endl;
+	int list_image_size = (int)images.size();
 
-	input.close();
-	return bytes;
+	for (int i = 0; i < list_image_size; ++i)
+	{
+		std::vector<unsigned char> bytes = read_bytes_from_file("data/images/" + images[i]);
+		std::cout << "File: " << images[i] << std::endl;
+		test_file(bytes);
+	}
+	std::cout << std::endl;
 }
 
 void write_bytes_from_file(std::string filename, std::vector<unsigned char> bytes)
@@ -82,4 +78,10 @@ void write_bytes_from_file(std::string filename, std::vector<unsigned char> byte
 	output.write(reinterpret_cast<char const*>(&bytes[0]), bytes.size());
 
 	output.close();
+}
+
+int main()
+{
+	test_files();
+	return 0;
 }
