@@ -3,8 +3,6 @@
 #include <fstream>
 #include <chrono>
 
-
-
 std::pair<unsigned int, unsigned int> calculate_bits(std::vector<unsigned char> bytes)
 {
 	unsigned int c1 = 0;
@@ -44,12 +42,14 @@ void test_file(std::vector<unsigned char> bytes)
 	auto encode_end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> encode_time = std::chrono::duration_cast<std::chrono::nanoseconds>(encode_end - encode_begin);
 
-	std::cout << "Original size: " << bytes.size() * 8 << " bits" << std::endl;
-	std::cout << "Encoded size: " << encoded.size() << " bits" << std::endl;
-	std::cout << "Compression ratio: " << (double)encoded.size() / (double)(bytes.size() * 8) << std::endl;
-	std::cout << "Compression factor: " << (double)((double)bytes.size() * 8) / (double)encoded.size() << std::endl;
-	std::cout << "Saving percentage: " << (double)((double)bytes.size() * 8 - (double)encoded.size()) / (double)(bytes.size() * 8) << std::endl;
-	std::cout << "Encode time: " << encode_time.count() << " ns" << std::endl;
+	std::cout << "Original size: 		" << bytes.size() * 8 << " bits" << std::endl;
+	std::cout << "Encoded size: 		" << encoded.size() << " bits" << std::endl;
+	std::cout << "Compression ratio: 	" << (double)encoded.size() / (double)(bytes.size() * 8) << std::endl;
+	std::cout << "Compression factor: 	" << (double)((double)bytes.size() * 8) / (double)encoded.size() << std::endl;
+	std::cout << "Saving percentage: 	" << (double)((double)bytes.size() * 8 - (double)encoded.size()) / (double)(bytes.size() * 8) << std::endl;
+	std::cout << "Encode time: 		" << encode_time.count() << " ns" << std::endl;
+
+	std::cout << std::endl;
 }
 
 void test_files() 
@@ -59,12 +59,13 @@ void test_files()
 		"lena.pgm",	"mandril.pgm", "peppers.pgm"
 	};
 
-	std::cout << "Read images" << std::endl;
+	std::cout << "-- READ IMAGES --\n" << std::endl;
 	int list_image_size = (int)images.size();
 
 	for (int i = 0; i < list_image_size; ++i)
 	{
 		std::vector<unsigned char> bytes = read_bytes_from_file("data/images/" + images[i]);
+		std::cout << "------------------------------------" << std::endl;
 		std::cout << "File: " << images[i] << std::endl;
 		test_file(bytes);
 	}
