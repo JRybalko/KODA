@@ -33,13 +33,12 @@ void test_files()
 	{
 		std::vector<unsigned char> bytes = read_bytes_from_file("data/images/" + images[i]);
 		std::cout << "File: " << images[i] << std::endl;
-		std::string file_path = "out/images/" + images[i];
-		test_file(bytes, file_path);
+		test_file(bytes);
 	}
 	std::cout << std::endl;
 }
 
-void test_file(std::vector<unsigned char> bytes, std::string out_file)
+void test_file(std::vector<unsigned char> bytes)
 {
     Encoder encoder = Encoder();
 
