@@ -1,6 +1,9 @@
 #include <iostream>
 #include "Encoder.hpp"
+#include "Decoder.hpp"
 #include <fstream>
+#include <map>
+#include <random>
 
 int main()
 {
@@ -38,9 +41,34 @@ void test_files()
 	std::cout << std::endl;
 }
 
+long double binary_entropy(unsigned int c1, unsigned int c2)
+{
+	long double p1 = (long double)c1 / (long double)(c1 + c2);
+	long double p2 = (long double)c2 / (long double)(c1 + c2);
+	return -(p1 * std::log2(p1) + p2 * std::log2(p2));
+}
+
+double entropy(std::vector<unsigned char> bytes)
+{
+	std::map<unsigned char, unsigned int> histogram;
+	for (auto byte : bytes)
+	{
+		histogram[byte] += 1;
+	}
+	double entropy = 0;
+	for (auto& pair : histogram)
+	{
+		double p = (double)pair.second / (double)bytes.size();
+		entropy += p * log2(p);
+	}
+	return -entropy;
+}
+
+
 void test_file(std::vector<unsigned char> bytes)
 {
     Encoder encoder = Encoder();
+	Decoder decoder = Decoder();
 
 	std::pair<unsigned int, unsigned int> counts = calculate_bits(bytes);
 	
@@ -52,12 +80,46 @@ void test_file(std::vector<unsigned char> bytes)
 	auto encode_end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> encode_time = std::chrono::duration_cast<std::chrono::nanoseconds>(encode_end - encode_begin);
 
+	auto decode_begin = std::chrono::high_resolution_clock::now();
+	std::vector<unsigned char> decoded = decoder.binary_decode(encoded, counts.first, counts.second);
+	auto decode_end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> decode_time = std::chrono::duration_cast<std::chrono::nanoseconds>(decode_end - decode_begin);
+
+	std::vector<unsigned char> decoded_file;
+	int offset = 0;
+	while (decoded.size() >= offset + 8)
+	{
+		std::vector<unsigned char> bytes(decoded.begin() + offset, decoded.begin() + offset + 8);
+		unsigned char byte = 0;
+
+		for (int i = 0; i < 8; ++i)
+		{
+			byte += bytes[i] * std::pow(2, 7 - i);
+		}
+		decoded_file.push_back(byte);
+		offset += 8;
+	}
+	write_bytes_from_file("out_file", decoded_file);
+
 	std::cout << "Original size: " << bytes.size() * 8 << " bits" << std::endl;
 	std::cout << "Encoded size: " << encoded.size() << " bits" << std::endl;
 	std::cout << "Compression ratio: " << (double)encoded.size() / (double)(bytes.size() * 8) << std::endl;
 	std::cout << "Compression factor: " << (double)((double)bytes.size() * 8) / (double)encoded.size() << std::endl;
 	std::cout << "Saving percentage: " << (double)((double)bytes.size() * 8 - (double)encoded.size()) / (double)(bytes.size() * 8) << std::endl;
 	std::cout << "Encode time: " << encode_time.count() << " ns" << std::endl;
+	std::cout << "Entropy (8 bit words): " << entropy(bytes) << std::endl;
+	std::cout << "Entropy (1 bit words): " << binary_entropy(counts.first, counts.second) << std::endl;
+	std::cout << "Decode time: " << decode_time.count() << " ns" << std::endl;
+
+	if (bytes == decoded_file)
+	{
+		std::cout << "Decoding successful" << std::endl;
+	}
+	else
+	{
+		std::cout << "Decoding failed" << std::endl;
+	}
+	std::cout << std::endl;
 }
 
 std::vector<unsigned char> read_bytes_from_file(std::string filename)
