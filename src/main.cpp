@@ -54,6 +54,14 @@ double entropy(std::vector<unsigned char> bytes)
 	return -entropy;
 }
 
+void write_bytes_from_file(std::string filename, std::vector<unsigned char> bytes)
+{
+	std::ofstream output(filename, std::ios::binary);
+
+	output.write(reinterpret_cast<char const*>(&bytes[0]), bytes.size());
+
+	output.close();
+}
 
 void test_file(std::vector<unsigned char> bytes)
 {
@@ -132,14 +140,7 @@ void test_files()
 	std::cout << std::endl;
 }
 
-void write_bytes_from_file(std::string filename, std::vector<unsigned char> bytes)
-{
-	std::ofstream output(filename, std::ios::binary);
 
-	output.write(reinterpret_cast<char const*>(&bytes[0]), bytes.size());
-
-	output.close();
-}
 
 int main()
 {
